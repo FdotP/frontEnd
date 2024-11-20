@@ -38,11 +38,15 @@
                     password:this.password
                 }
                 const response = await axios.post("http://localhost:8100/login", data).then(
-                    res => {console.log(res)}
+                    res => {
+                      console.log(res.data.token)
+                      localStorage.setItem('token',res.data.token);
+                      this.$router.push({path:"/"})
+                    }
                 ).catch(
                     err => {console.log(err)}
                 )
-                localStorage.setItem('token',response.data.token);
+                
             }
 
         }

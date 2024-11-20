@@ -24,7 +24,7 @@
               </a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" ><RouterLink to="/login">Login </RouterLink></a></li>
-                <li><a class="dropdown-item" ><RouterLink to="/register">R egister</RouterLink></a></li>
+                <li><a class="dropdown-item" ><RouterLink to="/register">Register</RouterLink></a></li>
                 <li>
                   <hr class="dropdown-divider">
                 </li>

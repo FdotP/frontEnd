@@ -33,7 +33,8 @@
                     password:this.password
                 }
                 axios.post("http://localhost:8100/register", data).then(
-                    res => {console.log(res)}
+                    res => {console.log(res)},
+                    this.$router.push({path:"/login"})
                 ).catch(
                     err => {console.log(err)}
                 )
