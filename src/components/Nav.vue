@@ -36,7 +36,7 @@
   </div>
 </nav>
 </template>
-<style>
+<style scoped>
 #navbarCollapse
 {
     justify-content: space-between;

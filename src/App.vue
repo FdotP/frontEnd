@@ -1,46 +1,42 @@
 <script setup>
   import {RouterView } from 'vue-router'
   import Nav from "./components/Nav.vue"
-  import { compile, onMounted } from 'vue';
+  import { ref, compile, onMounted } from 'vue';
   import axios from 'axios';
+ 
 
-  let user = ''
+  const user = ref(null);
 
-  
+
+
+
   onMounted(async () => {
-    try {
-      await axios.get("http://localhost:8100/user",{
-        headers:{
-          Authorization:'Bearer ' + localStorage.getItem('token') 
-        }
-      }  ).then(
-                    res => {
-                      user = res.data
-                      console.log(user)
-                    }
-                ).catch(
-                    err => {console.log(err)}
-                )
-              }catch (error) {
-    console.error('Wystąpił błąd:', error); // Obsługa błędu
-
+  try {
+    const response = await axios.get("http://localhost:8100/user", {
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+    });
+    user.value = response.data;
+  } catch (err) {
+    console.error(err);
   }
-
 });
 
-console.log(user)
+  
 
   
 </script>
 
 <template>
   <Nav/>
-  <main class="form-signin w-100 m-auto">
-    <RouterView :user="user"/>
-  </main>
+
+      <RouterView :user="user"/>
+    
 </template>
 
 <style scoped>
+
 
 .form-signin {
   max-width: 330px;
