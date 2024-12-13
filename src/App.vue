@@ -1,16 +1,16 @@
 <script setup>
   import {RouterView } from 'vue-router'
   import Nav from "./components/Nav.vue"
+  import { useStore } from 'vuex';
   import { ref, compile, onMounted } from 'vue';
   import axios from 'axios';
- 
-
+  const store = useStore();
   const user = ref(null);
 
 
-
-
   onMounted(async () => {
+
+
   try {
     const response = await axios.get("http://localhost:8100/user", {
       headers: {
@@ -30,9 +30,8 @@
 
 <template>
   <Nav/>
+  <RouterView :user="user"/>
 
-      <RouterView :user="user"/>
-    
 </template>
 
 <style scoped>

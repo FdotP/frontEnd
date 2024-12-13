@@ -2,7 +2,6 @@
 import axios from 'axios';
 import Product from '../components/Product.vue';
 import { ref, onMounted } from 'vue';
-
 const props = defineProps(['user']);
 console.log(props.user);
 
@@ -22,6 +21,8 @@ onMounted(async () => {
 });
 
 </script>
+
+
 
 <template>
   <div v-if="products && products.length > 0" id="productListing">
