@@ -1,5 +1,5 @@
 <template>
-  <ul class="listOfProducts">
+  <ul class="listOfProducts" style="margin-top: 60px;">
     <li v-for="(product, index) in props.products" :key="index" class="product">
       <router-link to="/product-details">
         <h2 class="product-name"
@@ -8,12 +8,10 @@
         </h2>
       </router-link>
       <div class="product-price">
-        <span>R$ {{ product.cena }}, 00</span>
-        <span>10 x {{ Math.round(product.price / 10) }}, 00 </span>
+        <span>{{ product.cena }}, 00 Zł</span>
       </div>
 
       <btn btnColor="btn btn-large btn-sucess"
-          :cartIcon="true"
           @click.native="addProductToCart(product)">
         Add to cart
       </btn>
