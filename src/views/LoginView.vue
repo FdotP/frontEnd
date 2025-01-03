@@ -1,11 +1,11 @@
 <template>
-    <main class="form-signin w-100 m-auto">
-      <form @submit.prevent="handleSubmit">
+  <main class="form-signin w-100 m-auto">
+    <form @submit.prevent="handleSubmit">
       <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
       <div class="form-floating">
-        <input type="login" class="form-control" id="floatingInput" placeholder="name@example.com" v-model="login">
-        <label for="floatingInput">Email address</label>
+        <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" v-model="login">
+        <label for="floatingInput">Login</label>
       </div>
       <div class="form-floating">
         <input type="password" class="form-control" id="floatingPassword" placeholder="Password" v-model="password">
@@ -21,41 +21,39 @@
       <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
       <p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2024</p>
     </form>
-</main>
+  </main>
 </template>
-<script>
-    import axios from 'axios';
-    export default{
-        name:'login',
-        data(){
-            return{
-                login:'',
-                password:''
-            }
-        },
-        methods:{
-            async handleSubmit(){
-                const data = {
-                    login: this.login,
-                    password:this.password
-                }
-                const response = await axios.post("http://localhost:8100/login", data).then(
-                    res => {
-                      console.log(res.data.token)
-                      localStorage.setItem('token',res.data.token);
-                      this.$router.push({path:"/"})
-                    }
-                ).catch(
-                    err => {console.log(err)}
-                )
-                
-            }
 
-        }
-    }
-  </script>
+<script setup>
+import { ref } from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
-  <style scoped>
-    
+const store = useStore();
+const router = useRouter();
 
-  </style>
+const login = ref('');
+const password = ref('');
+
+
+const handleSubmit = async () => {
+  const data = {
+    login: login.value,
+    password: password.value,
+  };
+
+  try {
+    const response = await axios.post("http://localhost:8100/login", data);
+    console.log(response.data.token);
+    localStorage.setItem('token', response.data.token);
+    await store.dispatch('setUser');
+    router.push({ path: "/" });
+  } catch (err) {
+    console.error(err);
+  }
+};
+</script>
+
+<style scoped>
+</style>

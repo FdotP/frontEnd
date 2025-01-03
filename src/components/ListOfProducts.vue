@@ -24,7 +24,7 @@
 const props = defineProps({
   products: {
     type: Array,
-    required: true,  // Make sure the parent passes a value for 'products'
+    required: true, 
   }
 });
 

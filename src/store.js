@@ -1,14 +1,16 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
+import { ScatterController } from 'chart.js';
 
 
 export default createStore({
   state: {
     products: [],
-    cartProducts: [],
+    cartProducts: JSON.parse(localStorage.getItem('cartProducts')) || [],  // Załaduj dane z localStorage, jeśli istnieją
     currentProduct: {},
     showModal: false,
     showPopupCart: false,
+    user:{}
   },
 
   getters: {
@@ -17,6 +19,7 @@ export default createStore({
     getCurrentProduct: state => state.currentProduct,
     getShowModal: state => state.showModal,
     getPopupCart: state => state.showPopupCart,
+    getUser: state => state.user,
   },
 
   mutations: {
@@ -25,9 +28,11 @@ export default createStore({
     },
     ADD_PRODUCT: (state, product) => {
       state.cartProducts.push(product);
+      localStorage.setItem('cartProducts', JSON.stringify(state.cartProducts));  // Zapisz koszyk w localStorage
     },
     REMOVE_PRODUCT: (state, index) => {
       state.cartProducts.splice(index, 1);
+      localStorage.setItem('cartProducts', JSON.stringify(state.cartProducts));  // Zapisz koszyk w localStorage
     },
     CURRENT_PRODUCT: (state, product) => {
       state.currentProduct = product;
@@ -35,8 +40,11 @@ export default createStore({
     SHOW_MODAL: (state) => {
       state.showModal = !state.showModal;
     },
-    SHOW_POPUP_CART: (state) => {
+    SHOW_POPUP_CART: (state) => {  
       state.showPopupCart = !state.showPopupCart;
+    },
+    SET_USER:(state, user)=>{
+      state.user = user;
     },
   },
 
@@ -68,6 +76,18 @@ export default createStore({
     },
     showOrHiddenPopupCart({ commit }) {
       commit('SHOW_POPUP_CART');
+    },
+    async setUser({ commit }) {
+      try {
+        const response = await axios.get("http://localhost:8100/user", {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('token'),
+          },
+        });
+        commit('SET_USER', response.data);
+      } catch (err) {
+        console.error(err);
+      }
     },
   },
 });
