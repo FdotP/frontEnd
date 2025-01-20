@@ -48,7 +48,7 @@ const handleSubmit = async () => {
     console.log(response.data.token);
     localStorage.setItem('token', response.data.token);
     await store.dispatch('setUser');
-    router.push({ path: "/" });
+    router.push({ path: "/shop" });
   } catch (err) {
     console.error(err);
   }

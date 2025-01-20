@@ -1,95 +1,135 @@
 <template>
-  <ul class="listOfProducts" style="margin-top: 60px;">
-    <li v-for="(product, index) in props.products" :key="index" class="product">
-      <router-link to="/product-details">
-        <h2 class="product-name"
-            @click="addCurrentProduct(product)">
-          {{ product.nazwa }}
-        </h2>
-      </router-link>
-      <div class="product-price">
-        <span>{{ product.cena }}, 00 Zł</span>
-      </div>
-
-      <btn btnColor="btn btn-large btn-sucess"
-          @click.native="addProductToCart(product)">
-        Add to cart
-      </btn>
-    </li>
-  </ul>
+  <div class="list-of-products" style="margin-top: 60px;">
+    <div class="filters">
+      <input type="text" v-model="nameFilter" placeholder="Filter by name" />
+      <select v-model="categoryFilter">
+        <option value="">All Categories</option>
+        <option v-for="category in categories" :key="category._id" :value="category._id">
+          {{ category.nazwa }}
+        </option>
+      </select>
+    </div>
+    <table class="product-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Price</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(product, index) in filteredProducts" :key="index" class="product-row">
+          <td>
+            <router-link :to="`/product-detail/${product._id}`" class="custom-link">
+              <h2 class="product-name">
+                {{ product.nazwa }}
+              </h2>
+            </router-link>
+          </td>
+          <td class="product-price">
+            <span>{{ product.cena }} Zł</span>
+          </td>
+          <td class="product-action">
+            <btn btnColor="btn btn-large btn-success" @click.native="addProductToCart(product)">
+              Add to cart
+            </btn>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script setup>
-
-const props = defineProps({
-  products: {
-    type: Array,
-    required: true, 
-  }
-});
-
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import btn from './Btn.vue';
 
 const store = useStore();
+const nameFilter = ref('');
+const categoryFilter = ref('');
+
+const products = computed(() => store.getters.getProducts);
+const categories = computed(() => store.getters.getCategories);
+
+const filteredProducts = computed(() => {
+  return products.value.filter(product => {
+    const matchesName = product.nazwa.toLowerCase().includes(nameFilter.value.toLowerCase());
+    const matchesCategory = !categoryFilter.value || product.kategoria === categoryFilter.value;
+    return matchesName && matchesCategory;
+  });
+});
+
+const addCurrentProduct = (product) => {
+  store.commit('CURRENT_PRODUCT', product);
+};
 
 const addProductToCart = (product) => {
   store.dispatch('addProduct', product);
 };
 
-const addCurrentProduct = (product) => {
-  store.dispatch('currentProduct', product);
-};
-
-
-onMounted( async () =>{
-  console.log(props.products)
-})
-
+onMounted(() => {
+  store.dispatch('fetchProducts');
+  store.dispatch('fetchCategories');
+});
 </script>
 
 <style scoped>
-  .listOfProducts {
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    padding: 0;
-  }
+.list-of-products {
+  padding: 20px;
+}
 
-  .product {
-    width: 300px;
-    background-color: #fff;
-    list-style: none;
-    box-sizing: border-box;
-    padding: 1em;
-    margin: 1em 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-radius: 7px;
-  }
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
 
-  .product-name {
-    font-size: 1.2em;
-    font-weight: normal;
-  }
+.filters input,
+.filters select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
 
-  .product-name:hover {
-    cursor: pointer;
-    text-decoration: underline;
-  }
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+}
 
-  .product-price {
-    width: 100%;
-    align-self: flex-start;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: .5em;
-  }
+.product-table th, .product-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
 
+.product-table th {
+  background-color: #f9f9f9;
+}
+
+.product-name {
+  margin: 0;
+  color: inherit; /* Ensure the product name inherits the color from its parent */
+}
+
+.product-price {
+  text-align: left;
+}
+
+.product-action {
+  text-align: right;
+}
+
+.custom-link {
+  text-decoration: none; /* Remove underline from links */
+  color: inherit; /* Ensure the link inherits the color from its parent */
+}
+
+.custom-link:hover {
+  color: #007bff; /* Change color on hover */
+}
+
+.btn {
+  cursor: pointer;
+}
 </style>
-

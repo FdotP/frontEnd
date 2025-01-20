@@ -1,26 +1,23 @@
 <script setup>
-  import maskBg from './components/Mask.vue';
-  import btn from './components/Btn.vue';
-  import {RouterView, useRouter } from 'vue-router'
-  import popupcart from './components/Popupcart.vue';
-  import Nav from "./components/Nav.vue"
-  import { useStore } from 'vuex';
-  import { computed } from 'vue';
-  import { ref, compile, onMounted } from 'vue';
-  import axios from 'axios';
-  const store = useStore();
+import maskBg from './components/Mask.vue';
+import btn from './components/Btn.vue';
+import { RouterView, useRouter } from 'vue-router';
+import popupcart from './components/Popupcart.vue';
+import Nav from "./components/Nav.vue";
+import { useStore } from 'vuex';
+import { computed, onMounted } from 'vue';
 
 
+const store = useStore();
+const router = useRouter();
 
-  onMounted(async () => {
-    await store.dispatch('setUser');
-    console.log(getUser.value)
-
-  });
+onMounted(async () => {
+  await store.dispatch('setUser');
+});
 
 const getProductsInCart = computed(() => store.getters.getProductsInCart);
 const getPopupCart = computed(() => store.getters.getPopupCart);
-const getUser = computed(()=>store.getters.getUser);
+const getUser = computed(() => store.getters.getUser);
 
 const hasProduct = computed(() => getProductsInCart.value.length > 0);
 
@@ -28,11 +25,18 @@ const showPopupCart = () => {
   store.dispatch('showOrHiddenPopupCart');
 };
 
+// Navigation guard to check if the user is logged in
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = !!store.state.user._id;
+  const publicPages = ['/login', '/register', '/'];
+  const authRequired = !publicPages.includes(to.path);
 
-
-  
-
-  
+  if (!isLoggedIn && authRequired) {
+    next('/login');
+  } else {
+    next();
+  }
+});
 </script>
 
 <template>
@@ -54,6 +58,11 @@ const showPopupCart = () => {
 
 
 <style scoped>
+
+#app {
+  margin-top: 60px;
+}
+
 
 body {
     font-family: 'Roboto', sans-serif;

@@ -1,5 +1,5 @@
 <template>
- <listOfProducts :products="getAllProducts"/>
+ <listOfProducts/>
 </template>
 
 <script setup>
@@ -8,11 +8,8 @@ import { useStore } from 'vuex';
 import listOfProducts from '../components/ListOfProducts.vue';
 
 const store = useStore();
-const getAllProducts = computed(() => store.getters['getProducts']);
 
-onMounted(async () => {
-  store.dispatch('getProductsFromDatabase');
-});
+
 
 </script>
 

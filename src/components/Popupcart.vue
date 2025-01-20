@@ -1,21 +1,25 @@
 <template>
-    <div class="box">
-      <span v-if="!hasProduct">No products :/</span>
-      <div v-for="(product, index) in getProductsInCart" :key="index" class="box-item">
-        <img :src="product.image" alt="" class="item-thumb">
-        <h3 class="item-name">{{ product.nazwa }}</h3>
-        <span class="item-amount">Amount: 1</span>
-        <span class="item-price">{{ product.cena }}, 00 zł</span>
-      </div>
-      <div class="cart-info" v-if="hasProduct">
-        <span>Total: {{ totalPrice }}, 00 zł</span>
-        <router-link to="/checkout">
-          <Btn :btnColor="'btn btn-small btn-info'" @click="showPopupCart">
-            View cart
-          </Btn>
-        </router-link>
-      </div>
+  <div class="box">
+    <span v-if="!hasProduct">No products :/</span>
+    <div v-for="(product, index) in getProductsInCart" :key="index" class="box-item">
+      <h3 class="item-name">{{ product.nazwa }}</h3>
+      <span class="item-amount">amount {{ product.quantity }}</span>
+      <span class="item-price">{{ product.cena * product.quantity }} zł</span>
+      <button @click="decrementQuantity(product)">-</button>
+
+      <button @click="incrementQuantity(product)">+</button>
+      
+      <button @click="removeProduct(index)">Remove</button>
     </div>
+    <div class="cart-info" v-if="hasProduct">
+      <span>Total: {{ totalPrice }} zł</span>
+      <router-link to="/checkout">
+        <Btn :btnColor="'btn btn-small btn-info'" @click="showPopupCart">
+          View cart
+        </Btn>
+      </router-link>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -30,73 +34,65 @@ const getProductsInCart = computed(() => store.getters.getProductsInCart);
 const hasProduct = computed(() => getProductsInCart.value.length > 0);
 
 const totalPrice = computed(() => {
-  return getProductsInCart.value.reduce((current, next) => current + next.cena, 0);
+  return getProductsInCart.value.reduce((current, next) => current + next.cena * next.quantity, 0);
 });
 
-const showPopupCart = () => {
-  store.dispatch('showOrHiddenPopupCart');
+const incrementQuantity = (product) => {
+  store.commit('INCREMENT_PRODUCT_QUANTITY', product._id);
+};
+
+const decrementQuantity = (product) => {
+  if (product.quantity > 1) {
+    store.commit('DECREMENT_PRODUCT_QUANTITY', product._id);
+  } else {
+    store.commit('REMOVE_PRODUCT', getProductsInCart.value.indexOf(product));
+  }
+};
+
+const removeProduct = (index) => {
+  store.commit('REMOVE_PRODUCT', index);
 };
 </script>
 
 <style scoped>
-  .box {
-    width: 400px;
-    height: auto;
-    background-color: #FAFAFA;
-    box-shadow: 0px 0px 10px rgba(73, 74, 78, 0.1);
-    border-radius: 5px;
-    box-sizing: border-box;
-    padding: 1em .5em;
-    position: absolute;
-    z-index: 1;
-  }
+.box {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-  .box:after {
-    content: '';
-    width: 30px;
-    height: 30px;
-    transform: rotate(45deg);
-    background: inherit;
-    position: absolute;
-    top: -15px;
-    right: 15px;
-  }
+.box-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
 
-  .box-item {
-    width: 100%;
-    height: 130px;
-    background-color: #fff;
-    box-sizing: border-box;
-    border-radius: 3px;
-    padding: 0 .5em;
-    margin-top: .3em;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-  }
+.item-name {
+  flex: 2;
+}
 
-  .item-thumb {
-    max-width: 70%;
-    grid-column: 1/2;
-    grid-row: 1/4;
-    align-self: center;
-  }
+.item-amount, .item-price {
+  flex: 1;
+}
 
-  .item-name {
-    grid-column: 2/4;
-    grid-row: 1/2;
-    font-weight: normal;
-  }
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
-  .item-amount {
-    grid-column: 2/3;
-    grid-row: 2/4;
-    color: #ddd;
-  }
+button:hover {
+  background-color: #0056b3;
+}
 
-  .cart-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+.cart-info {
+  margin-top: 20px;
+  text-align: center;
+}
 </style>

@@ -4,8 +4,16 @@
         <h1 class="h3 mb-3 fw-normal">Please sign up</h1>
 
         <div class="form-floating">
-        <input type="login" class="form-control" id="floatingInput" placeholder="name@example.com" v-model="login">
-        <label for="floatingInput">Email address</label>
+        <input type="login" class="form-control" id="floatingInput" placeholder="login" v-model="login">
+        <label for="floatingInput">login</label>
+        </div>
+        <div class="form-floating">
+        <input type="login" class="form-control" id="floatingEmail" placeholder="name@example.com" v-model="email">
+        <label for="floatingInput">email</label>
+        </div>
+        <div class="form-floating">
+        <input type="login" class="form-control" id="floatingNumber" placeholder="123123123" v-model="phonenumber">
+        <label for="floatingInput">phone number</label>
         </div>
         <div class="form-floating">
         <input type="password" class="form-control" id="floatingPassword" placeholder="Password" v-model="password">
@@ -25,14 +33,19 @@
         data(){
             return{
                 login:'',
-                password:''
+                password:'',
+                email:'',
+                phonenumber:''
             }
         },
         methods:{
             handleSubmit(){
                 const data = {
                     login: this.login,
-                    password:this.password
+                    email:this.email,
+                    phoneNumber:this.phonenumber,
+                    password:this.password,
+                    
                 }
                 axios.post("http://localhost:8100/register", data).then(
                     res => {console.log(res)},
